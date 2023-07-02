@@ -8,7 +8,8 @@ class User(AbstractUser):
         ('en', 'English'),
     ]
     language = models.CharField(max_length=2, choices=lista_lenguajes, default='es')
-    email = models.EmailField(unique=True)
+    username = models.EmailField(unique=True)
+    email = None
 
-    USERNAME_FIELD = 'email'
+    USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['first_name']
