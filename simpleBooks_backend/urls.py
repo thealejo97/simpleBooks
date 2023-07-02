@@ -17,11 +17,12 @@ Including another URLconf
 from django.urls import include, path
 from rest_framework import routers
 from django.contrib import admin
+from simpleBooks_backend.users.views import UserViewSet
 
 router = routers.DefaultRouter()
-
+router.register(r'users', UserViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include(router.urls)),
+    path('api/', include(router.urls)),
 ]
