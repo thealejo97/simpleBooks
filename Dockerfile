@@ -16,6 +16,8 @@ RUN apt-get update \
 
 WORKDIR $DJANGO_DIR
 
+RUN apt-get install -y build-essential
+RUN apt-get install -y libpq-dev
 # Copiamos los requeriments
 COPY ./requeriments.txt $DJANGO_DIR/requeriments.txt
 
@@ -26,6 +28,6 @@ RUN pip3 install -r $DJANGO_DIR/requeriments.txt
 COPY . .
 
 # Ejecutamos las migraciones
-RUN python manage.py migrate
+RUN #python manage.py migrate
 
 EXPOSE 8000
