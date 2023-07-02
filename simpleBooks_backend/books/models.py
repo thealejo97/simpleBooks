@@ -1,5 +1,6 @@
 from django.db import models
 from simpleBooks_backend.users.models import User
+from simpleBooks_backend.authors.models import Author
 
 
 class Book(models.Model):
@@ -11,7 +12,7 @@ class Book(models.Model):
     resume = models.TextField()
     genre = models.CharField(max_length=255)
     cover_image = models.ImageField(upload_to='book_covers/')
-    # author = models.ForeignKey('Author', on_delete=models.CASCADE)
+    author = models.ForeignKey(Author, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     reading_status_porcentaje = models.IntegerField()
     finished = models.BooleanField(default=False)

@@ -66,6 +66,8 @@ INSTALLED_APPS = [
 
     'simpleBooks_backend.users',
     'simpleBooks_backend.books',
+    'simpleBooks_backend.authors',
+    'simpleBooks_backend.reading_sessions',
 ]
 AUTH_USER_MODEL='users.User'
 
