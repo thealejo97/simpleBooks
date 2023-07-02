@@ -6,3 +6,5 @@ typing_extensions==4.7.0
 tzdata==2023.3
 psycopg2==2.8.6
 Pillow
+django-rest-auth
+django-allauth
