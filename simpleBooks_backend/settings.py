@@ -23,16 +23,11 @@ from django.core.exceptions import ImproperlyConfigured
 
 # print(BASE_DIR)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-print(BASE_DIR)
 
 secrets_file = os.path.join(BASE_DIR, "secrets.json")
 
-print(secrets_file)
-# print(os.path.join(os.path.dirname(BASE_DIR)))
 with open(secrets_file) as f:
-    print(os.path.dirname(BASE_DIR))
     secrets = json.loads(f.read())
-    print(secrets)
 
 
 def get_secret(setting, secrets=secrets):
@@ -62,6 +57,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
