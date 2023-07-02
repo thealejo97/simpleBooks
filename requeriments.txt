@@ -5,3 +5,4 @@ sqlparse==0.4.4
 typing_extensions==4.7.0
 tzdata==2023.3
 psycopg2==2.8.6
+Pillow
