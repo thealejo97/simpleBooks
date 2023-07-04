@@ -14,12 +14,14 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf import settings
+from django.conf.urls.static import static
 from django.urls import include, path
 from rest_framework import routers
 from django.contrib import admin
 
 from simpleBooks_backend.reading_sessions.views import ReadingSessionViewSet
-from simpleBooks_backend.users.views import UserViewSet
+from simpleBooks_backend.users.views import UserViewSet, CustomLoginView
 from simpleBooks_backend.books.views import BookViewSet
 from simpleBooks_backend.authors.views import AuthorViewSet
 
@@ -32,6 +34,7 @@ router.register(r'reading_sessions', ReadingSessionViewSet)
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
-    path('api/auth/', include('rest_auth.urls')),
+    path('api/books/by_user/', BookViewSet.as_view({'get': 'user_id'}), name='books-by-user'),
+    path('api/auth/login/', CustomLoginView.as_view(), name='rest_login'),
     path('api/auth/registration/', include('rest_auth.registration.urls')),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

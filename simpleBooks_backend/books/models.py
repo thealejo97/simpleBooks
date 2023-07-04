@@ -4,6 +4,11 @@ from simpleBooks_backend.authors.models import Author
 
 
 class Book(models.Model):
+    lista_lenguajes = [
+        ('es', 'Español'),
+        ('en', 'English'),
+    ]
+
     title = models.CharField(max_length=255)
     ISBN = models.CharField(max_length=13)
     publication_date = models.DateField()
@@ -16,3 +21,4 @@ class Book(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     reading_status_porcentaje = models.IntegerField()
     finished = models.BooleanField(default=False)
+    language = models.CharField(max_length=2, choices=lista_lenguajes, default='es')
