@@ -16,7 +16,7 @@ class Book(models.Model):
     creation_date = models.DateTimeField(auto_now_add=True)
     resume = models.TextField()
     genre = models.CharField(max_length=255)
-    cover_image = models.ImageField(upload_to='book_covers/')
+    cover_image = models.ImageField(upload_to='book_covers/', null=True,blank=True)
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     reading_status_porcentaje = models.IntegerField()
