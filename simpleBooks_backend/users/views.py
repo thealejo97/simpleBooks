@@ -1,12 +1,11 @@
 from rest_framework import viewsets
 from .models import User
-from .serializers import UserSerializer
+from .serializers import UserSerializer, CustomRegisterSerializer
 from rest_auth.views import LoginView
+from rest_auth.registration.views import RegisterView
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-
-
 class CustomLoginView(LoginView):
     def get_response(self):
         original_response = super().get_response()
@@ -19,3 +18,6 @@ class CustomLoginView(LoginView):
         }
         original_response.data = data
         return original_response
+
+class CustomRegisterView(RegisterView):
+    serializer_class = CustomRegisterSerializer
