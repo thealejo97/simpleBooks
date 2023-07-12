@@ -34,7 +34,7 @@ router.register(r'reading_sessions', ReadingSessionViewSet)
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
-    path('api/books/by_user/', BookViewSet.as_view({'get': 'user_id'}), name='books-by-user'),
+    path('api/books/by_user/', BookViewSet.as_view({'get': 'by_user'}), name='books-by-user'),
     path('api/auth/login/', CustomLoginView.as_view(), name='rest_login'),
     path('api/auth/registration/', CustomRegisterView.as_view(), name='rest_register'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
