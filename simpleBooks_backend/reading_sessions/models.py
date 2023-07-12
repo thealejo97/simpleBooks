@@ -1,7 +1,8 @@
 from django.db import models
 
 from simpleBooks_backend.books.models import Book
-from simpleBooks_backend.users.models import User
+from ..users.models import User
+from django.db.models import Sum, ExpressionWrapper, F, DurationField, Avg, Max, Min
 
 
 class ReadingSession(models.Model):
@@ -11,3 +12,69 @@ class ReadingSession(models.Model):
     comment = models.TextField(blank=True, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    @staticmethod
+    def obtener_hojas_leidas_por_minuto(usuario_id):
+        usuario = User.objects.get(id=usuario_id)
+        sesiones_lectura = ReadingSession.objects.filter(user=usuario).aggregate(
+            tiempo_total=Sum(ExpressionWrapper(F("time_of_reading"), output_field=DurationField())),
+            hojas_leidas=Sum("readed_pages"),
+        )
+
+        tiempo_total = sesiones_lectura["tiempo_total"]
+        hojas_leidas = sesiones_lectura["hojas_leidas"]
+
+        print(tiempo_total)
+        print(tiempo_total.total_seconds())
+        print(tiempo_total.total_seconds() / 60)
+
+        print("")
+        print(hojas_leidas)
+
+        if tiempo_total and hojas_leidas:
+            hojas_por_minuto = hojas_leidas / (tiempo_total.total_seconds() / 60)
+        else:
+            hojas_por_minuto = 0
+        return hojas_por_minuto
+
+    @staticmethod
+    def obtener_hojas_leidas_promedio_por_sesion(usuario_id):
+        usuario = User.objects.get(id=usuario_id)
+
+        hojas_promedio = ReadingSession.objects.filter(user=usuario).aggregate(
+            hojas_promedio=Avg("readed_pages")
+        )["hojas_promedio"]
+
+        return hojas_promedio
+    @staticmethod
+    def obtener_total_sesiones_lectura(usuario_id):
+        return ReadingSession.objects.filter(user_id=usuario_id).count()
+    @staticmethod
+    def obtener_tiempo_total_lectura(usuario_id):
+        tiempo_total = ReadingSession.objects.filter(user_id=usuario_id).aggregate(
+            tiempo_total=Sum("time_of_reading")
+        )["tiempo_total"]
+        return (tiempo_total.total_seconds() / 60)
+    @staticmethod
+    def obtener_total_hojas_leidas(usuario_id):
+        total_hojas_leidas = ReadingSession.objects.filter(user_id=usuario_id).aggregate(
+            total_hojas_leidas=Sum("readed_pages")
+        )["total_hojas_leidas"]
+        return total_hojas_leidas
+    @staticmethod
+    def obtener_promedio_tiempo_lectura_por_sesion(usuario_id):
+        promedio_tiempo_lectura = ReadingSession.objects.filter(user_id=usuario_id).aggregate(
+            promedio_tiempo=Avg("time_of_reading")
+        )["promedio_tiempo"]
+        return (promedio_tiempo_lectura / 60)
+    @staticmethod
+    def obtener_duracion_sesion_mas_larga(usuario_id):
+        duracion_sesion_mas_larga = ReadingSession.objects.filter(user_id=usuario_id).aggregate(
+            duracion_sesion_mas_larga=Max("time_of_reading")
+        )["duracion_sesion_mas_larga"]
+        return duracion_sesion_mas_larga
+    @staticmethod
+    def obtener_duracion_sesion_mas_corta(usuario_id):
+        duracion_sesion_mas_corta = ReadingSession.objects.filter(user_id=usuario_id).aggregate(
+            duracion_sesion_mas_corta=Min("time_of_reading")
+        )["duracion_sesion_mas_corta"]
+        return duracion_sesion_mas_corta
