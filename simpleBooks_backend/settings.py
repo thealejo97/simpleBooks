@@ -51,6 +51,7 @@ ALLOWED_HOSTS = ['172.23.224.1','localhost']
 # Application definition
 
 INSTALLED_APPS = [
+    'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -69,6 +70,13 @@ INSTALLED_APPS = [
     'simpleBooks_backend.authors',
     'simpleBooks_backend.reading_sessions',
 ]
+
+CORS_ALLOWED_ORIGINS = [
+    # Aquí debes agregar el origen (dominio) desde el cual se realizarán las solicitudes CORS
+    # Por ejemplo, si tu aplicación cliente se ejecuta en http://localhost:3000, debes agregar esa URL aquí
+    'http://localhost:3000',
+]
+
 AUTH_USER_MODEL='users.User'
 
 SITE_ID = 1
@@ -85,6 +93,7 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
