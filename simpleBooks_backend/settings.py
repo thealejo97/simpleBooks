@@ -45,7 +45,7 @@ SECRET_KEY = 'django-insecure-@rd(izblo&e+lh=!olyk2=m09uoym!x_7e52%wj+)9p^hy-#)n
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['172.23.224.1','localhost','simplebooks.zeabur.app','https://simplebooks.zeabur.app/','dbc0-190-1-195-254.ngrok-free.app']
+ALLOWED_HOSTS = ['172.23.224.1','localhost','simplebooks.zeabur.app','35.184.64.234','dbc0-190-1-195-254.ngrok-free.app']
 
 
 # Application definition
