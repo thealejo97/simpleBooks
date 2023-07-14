@@ -7,7 +7,7 @@ from django.db.models import Sum, ExpressionWrapper, F, DurationField, Avg, Max,
 
 class ReadingSession(models.Model):
     time_of_reading = models.TimeField()
-    creation_date = models.TimeField(auto_now_add=True)
+    creation_date = models.DateTimeField(auto_now_add=True, null= True, blank=True)
     readed_pages = models.IntegerField()
     comment = models.TextField(blank=True, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
