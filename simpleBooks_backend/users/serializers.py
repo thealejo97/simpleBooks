@@ -12,6 +12,7 @@ class CustomRegisterSerializer(RegisterSerializer):
     first_name = serializers.CharField(required=True)
     last_name = serializers.CharField(required=True)
     username = serializers.CharField(required=True)
+    profile_picture = serializers.ImageField(required=False)
 
     def validate_username(self, username):
         User = get_user_model()
@@ -28,6 +29,7 @@ class CustomRegisterSerializer(RegisterSerializer):
             'password1': self.validated_data.get('password1', ''),
             'password2': self.validated_data.get('password2', ''),
             'username': self.validated_data.get('username', ''),
+            'profile_picture': self.validated_data.get('profile_picture', None),
         }
 
     def save(self, request):
@@ -35,5 +37,6 @@ class CustomRegisterSerializer(RegisterSerializer):
         user.first_name = self.cleaned_data.get('first_name')
         user.last_name = self.cleaned_data.get('last_name')
         user.username = self.cleaned_data.get('username')
+        user.profile_picture = self.cleaned_data.get('profile_picture', None)
         user.save()
         return user

@@ -9,6 +9,7 @@ class User(AbstractUser):
     ]
     language = models.CharField(max_length=2, choices=lista_lenguajes, default='es')
     username = models.EmailField(unique=True)
+    profile_picture = models.ImageField(upload_to='profile_picture/', null=True, blank=True)
     email = None
 
     USERNAME_FIELD = 'username'
