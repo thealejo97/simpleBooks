@@ -1,8 +1,11 @@
+from collections import defaultdict
+
 from django.db import models
 
 from simpleBooks_backend.books.models import Book
 from ..users.models import User
 from django.db.models import Sum, ExpressionWrapper, F, DurationField, Avg, Max, Min
+from decimal import Decimal, ROUND_HALF_UP
 
 
 class ReadingSession(models.Model):
@@ -33,6 +36,34 @@ class ReadingSession(models.Model):
         return hojas_por_minuto
 
     @staticmethod
+    def obtener_hojas_leidas_por_dia(usuario_id):
+        usuario = User.objects.get(id=usuario_id)
+        sesiones_lectura = ReadingSession.objects.filter(user=usuario)
+
+        if not sesiones_lectura:
+            return {}
+
+        # Usamos una lista de tuplas para realizar el seguimiento de las páginas leídas por día
+        paginas_por_dia = defaultdict(int)
+
+        for sesion in sesiones_lectura:
+            # Convertimos la fecha a un string en formato yyyy-mm-dd para agrupar las sesiones por día
+            fecha_sesion = str(sesion.creation_date.date())
+
+            # Sumamos las páginas leídas al día correspondiente
+            paginas_por_dia[fecha_sesion] += sesion.readed_pages
+
+        # Convertimos el defaultdict a una lista de tuplas (fecha, paginas)
+        lista_paginas_por_dia = list(paginas_por_dia.items())
+
+        # Ordenamos la lista de tuplas por las fechas en orden descendente (de la más reciente a la más antigua)
+        lista_paginas_por_dia.sort(reverse=True)
+
+        # Construimos el JSON de respuesta utilizando la lista ordenada
+        json_respuesta = {fecha: paginas for fecha, paginas in lista_paginas_por_dia}
+
+        return json_respuesta
+    @staticmethod
     def obtener_hojas_leidas_promedio_por_sesion(usuario_id):
         usuario = User.objects.get(id=usuario_id)
 
@@ -61,14 +92,21 @@ class ReadingSession(models.Model):
         if not total_hojas_leidas:
             return 0
         return total_hojas_leidas
+
     @staticmethod
     def obtener_promedio_tiempo_lectura_por_sesion(usuario_id):
         promedio_tiempo_lectura = ReadingSession.objects.filter(user_id=usuario_id).aggregate(
             promedio_tiempo=Avg("time_of_reading")
         )["promedio_tiempo"]
+
         if not promedio_tiempo_lectura:
-            return 0
-        return (promedio_tiempo_lectura / 60)
+            return Decimal(0).quantize(Decimal('0.00'))
+
+        # Convertir promedio_tiempo_lectura a minutos (decimal o flotante)
+        promedio_tiempo_minutos = promedio_tiempo_lectura.total_seconds() / 60
+
+        # Redondear a 2 decimales y convertir a Decimal
+        return Decimal(promedio_tiempo_minutos).quantize(Decimal('0.00'), rounding=ROUND_HALF_UP)
     @staticmethod
     def obtener_duracion_sesion_mas_larga(usuario_id):
         duracion_sesion_mas_larga = ReadingSession.objects.filter(user_id=usuario_id).aggregate(

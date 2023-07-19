@@ -19,9 +19,10 @@ class BookViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     def create(self, request, *args, **kwargs):
-        print("creando")
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
+            if serializer.validated_data.get('finished'):
+                serializer.validated_data['reading_status_porcentaje'] = 100
             self.perform_create(serializer)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
