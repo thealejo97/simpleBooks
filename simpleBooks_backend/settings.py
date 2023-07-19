@@ -69,6 +69,7 @@ INSTALLED_APPS = [
     'simpleBooks_backend.books',
     'simpleBooks_backend.authors',
     'simpleBooks_backend.reading_sessions',
+    'simpleBooks_backend.user_lecture_goal',
 ]
 
 CORS_ALLOWED_ORIGINS = [
