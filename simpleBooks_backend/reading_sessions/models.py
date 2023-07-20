@@ -36,7 +36,12 @@ class ReadingSession(models.Model):
         estadisticas["sessions_per_day"] = ReadingSession.obtener_sesiones_por_dia(usuario_id)
         estadisticas["sessions_per_day_avg"] = Decimal(sum(estadisticas["sessions_per_day"].values())/len(estadisticas["sessions_per_day"])).quantize(Decimal('0.00'))
         estadisticas["hours_per_day"] = ReadingSession.obtener_horas_por_dia(usuario_id)
-        estadisticas["hours_per_day_avg"] = Decimal(sum(estadisticas["hours_per_day"].values())/len(estadisticas["hours_per_day"])).quantize(Decimal('0.00'))
+        # Supongamos que tienes el promedio de horas por día en la variable `hours_per_day_avg` (este valor debe ser reemplazado por el que corresponda)
+        hours_per_day_avg = Decimal(sum(estadisticas["hours_per_day"].values()) / len(estadisticas["hours_per_day"])).quantize(Decimal('0.00'))
+        # Dividimos el número decimal en partes enteras y decimales, usando divmod()
+        hours_int, minutes_decimal = divmod(hours_per_day_avg * 60, 60)
+        # Formateamos las horas y los minutos con ceros a la izquierda si es necesario
+        estadisticas["hours_per_day_avg"] = f"{hours_int:02}:{int(minutes_decimal):02}"
         estadisticas["books_per_year"] = ReadingSession.obtener_libros_en_ano(usuario_id)
         return estadisticas
 
