@@ -6,6 +6,7 @@ from simpleBooks_backend.books.models import Book
 from ..users.models import User
 from django.db.models import Sum, ExpressionWrapper, F, DurationField, Avg, Max, Min
 from decimal import Decimal, ROUND_HALF_UP
+from datetime import datetime
 
 
 class ReadingSession(models.Model):
@@ -15,6 +16,59 @@ class ReadingSession(models.Model):
     comment = models.TextField(blank=True, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
+
+    @staticmethod
+    def obtener_estadisticas(usuario_id):
+        estadisticas = {}
+
+        estadisticas["hojas_leidas_promedio_por_sesion"] = Decimal(ReadingSession.obtener_hojas_leidas_promedio_por_sesion(usuario_id)).quantize(Decimal('0.00'))
+        estadisticas["total_sesiones_lectura"] = Decimal(ReadingSession.obtener_total_sesiones_lectura(usuario_id)).quantize(Decimal('0.00'))
+        estadisticas["tiempo_total_lectura"] = Decimal(ReadingSession.obtener_tiempo_total_lectura(usuario_id)).quantize(Decimal('0.00'))
+        estadisticas["total_hojas_leidas"] = Decimal(ReadingSession.obtener_total_hojas_leidas(usuario_id)).quantize(Decimal('0.00'))
+        estadisticas["promedio_tiempo_lectura_por_sesion"] = ReadingSession.obtener_promedio_tiempo_lectura_por_sesion(usuario_id)
+        estadisticas["duracion_sesion_mas_larga"] = ReadingSession.obtener_duracion_sesion_mas_larga(usuario_id)
+        estadisticas["duracion_sesion_mas_corta"] = ReadingSession.obtener_duracion_sesion_mas_corta(usuario_id)
+
+        ####
+        estadisticas["velocidad_lectura"] = Decimal(ReadingSession.obtener_hojas_leidas_por_minuto(usuario_id)).quantize(Decimal('0.00'))
+        estadisticas["page_per_day"] = ReadingSession.obtener_hojas_leidas_por_dia(usuario_id)
+        estadisticas["page_per_day_avg"] = Decimal(sum(estadisticas["page_per_day"].values())/len(estadisticas["page_per_day"])).quantize(Decimal('0.00'))
+        estadisticas["sessions_per_day"] = ReadingSession.obtener_sesiones_por_dia(usuario_id)
+        estadisticas["sessions_per_day_avg"] = Decimal(sum(estadisticas["sessions_per_day"].values())/len(estadisticas["sessions_per_day"])).quantize(Decimal('0.00'))
+        estadisticas["hours_per_day"] = ReadingSession.obtener_horas_por_dia(usuario_id)
+        estadisticas["hours_per_day_avg"] = Decimal(sum(estadisticas["hours_per_day"].values())/len(estadisticas["hours_per_day"])).quantize(Decimal('0.00'))
+        estadisticas["books_per_year"] = ReadingSession.obtener_libros_en_ano(usuario_id)
+        return estadisticas
+
+
+    @staticmethod
+    def obtener_libros_en_ano(usuario_id):
+        current_year = datetime.now().year
+        amount_books = Book.objects.filter(user_id=usuario_id, creation_date__year=current_year).count()
+        return amount_books
+    @staticmethod
+    def obtener_horas_por_dia(usuario_id):
+        usuario = User.objects.get(id=usuario_id)
+        sesiones_lectura = ReadingSession.objects.filter(user=usuario)
+
+        if not sesiones_lectura:
+            return {}
+
+        # Usamos una lista de tuplas para realizar el seguimiento de las horas de sesiones por día
+        horas_por_dia = defaultdict(int)
+
+        for sesion in sesiones_lectura:
+            # Convertimos la fecha a un string en formato yyyy-mm-dd para agrupar las sesiones por día
+            fecha_sesion = str(sesion.creation_date.date())
+
+            # Sumamos las horas de la sesión al día correspondiente
+            horas_por_dia[fecha_sesion] += sesion.time_of_reading.hour
+
+        # Convertimos el defaultdict a un diccionario normal
+        horas_por_dia = dict(horas_por_dia)
+
+        return horas_por_dia
+
     @staticmethod
     def obtener_hojas_leidas_por_minuto(usuario_id):
         usuario = User.objects.get(id=usuario_id)
@@ -34,6 +88,29 @@ class ReadingSession(models.Model):
             hojas_por_minuto = 0
 
         return hojas_por_minuto
+
+    @staticmethod
+    def obtener_sesiones_por_dia(usuario_id):
+        usuario = User.objects.get(id=usuario_id)
+        sesiones_lectura = ReadingSession.objects.filter(user=usuario)
+
+        if not sesiones_lectura:
+            return {}
+
+        # Usamos una lista de tuplas para realizar el seguimiento del número de sesiones por día
+        sesiones_por_dia = defaultdict(int)
+
+        for sesion in sesiones_lectura:
+            # Convertimos la fecha a un string en formato yyyy-mm-dd para agrupar las sesiones por día
+            fecha_sesion = str(sesion.creation_date.date())
+
+            # Incrementamos el contador de sesiones para el día correspondiente
+            sesiones_por_dia[fecha_sesion] += 1
+
+        # Convertimos el defaultdict a un diccionario normal
+        sesiones_por_dia = dict(sesiones_por_dia)
+
+        return sesiones_por_dia
 
     @staticmethod
     def obtener_hojas_leidas_por_dia(usuario_id):

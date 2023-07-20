@@ -33,18 +33,6 @@ class ReadingSessionViewSet(viewsets.ModelViewSet):
 
 class ReadingSessionStatistics(APIView):
     def post(self, request):
-        estadisticas = {}
         usuario_id = request.data.get("user_id")
-        estadisticas["hojas_leidas_por_minuto"] = Decimal(ReadingSession.obtener_hojas_leidas_por_minuto(usuario_id)).quantize(Decimal('0.00'))
-        estadisticas["hojas_leidas_promedio_por_sesion"] = Decimal(ReadingSession.obtener_hojas_leidas_promedio_por_sesion(usuario_id)).quantize(Decimal('0.00'))
-        estadisticas["total_sesiones_lectura"] = Decimal(ReadingSession.obtener_total_sesiones_lectura(usuario_id)).quantize(Decimal('0.00'))
-        estadisticas["tiempo_total_lectura"] = Decimal(ReadingSession.obtener_tiempo_total_lectura(usuario_id)).quantize(Decimal('0.00'))
-        estadisticas["total_hojas_leidas"] = Decimal(ReadingSession.obtener_total_hojas_leidas(usuario_id)).quantize(Decimal('0.00'))
-        estadisticas["promedio_tiempo_lectura_por_sesion"] = ReadingSession.obtener_promedio_tiempo_lectura_por_sesion(usuario_id)
-        estadisticas["duracion_sesion_mas_larga"] = ReadingSession.obtener_duracion_sesion_mas_larga(usuario_id)
-        estadisticas["duracion_sesion_mas_corta"] = ReadingSession.obtener_duracion_sesion_mas_corta(usuario_id)
-
-        ####
-        estadisticas["page_per_day"] = ReadingSession.obtener_hojas_leidas_por_dia(usuario_id)
-
+        estadisticas = ReadingSession.obtener_estadisticas(usuario_id)
         return Response(estadisticas)
