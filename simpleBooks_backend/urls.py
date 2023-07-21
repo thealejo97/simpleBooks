@@ -22,7 +22,7 @@ from django.contrib import admin
 
 from simpleBooks_backend.reading_sessions.views import ReadingSessionViewSet, ReadingSessionStatistics
 from simpleBooks_backend.users.views import UserViewSet, CustomLoginView, CustomRegisterView
-from simpleBooks_backend.books.views import BookViewSet
+from simpleBooks_backend.books.views import BookViewSet, GetRecommendedBooksName
 from simpleBooks_backend.authors.views import AuthorViewSet
 from simpleBooks_backend.user_lecture_goal.views import UserLectureGoalViewSet
 
@@ -37,6 +37,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
     path('api/books/by_user/', BookViewSet.as_view({'get': 'by_user'}), name='books-by-user'),
+    path('api/get_recommended_books/', GetRecommendedBooksName.as_view(), name='get_recommended_books'),
     path('api/user_lecture_goal/by_user/', UserLectureGoalViewSet.as_view({'get': 'by_user'}), name='goals-by-user'),
     path('api/readingsessin/getStadistics/', ReadingSessionStatistics.as_view(), name='getStadistics'),
     path('api/auth/login/', CustomLoginView.as_view(), name='rest_login'),

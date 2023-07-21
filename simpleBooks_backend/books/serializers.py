@@ -14,6 +14,7 @@ class BookSerializer(serializers.ModelSerializer):
             'title',
             'ISBN',
             'publication_date',
+            'publication_year',
             'total_pages',
             'creation_date',
             'resume',
