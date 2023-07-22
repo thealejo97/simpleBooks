@@ -22,6 +22,7 @@ class BookSerializer(serializers.ModelSerializer):
             'cover_image',
             'author',
             'user',
+            'readed_pages',
             'reading_status_porcentaje',
             'finished',
             'language'

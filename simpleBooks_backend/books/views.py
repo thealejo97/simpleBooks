@@ -23,8 +23,17 @@ class BookViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
+
+
             if serializer.validated_data.get('finished'):
                 serializer.validated_data['reading_status_porcentaje'] = 100
+                serializer.validated_data['readed_pages'] = serializer.validated_data.get('total_pages')
+            else:
+                readed_pages = serializer.validated_data.get('readed_pages')
+                total_pages = serializer.validated_data.get('total_pages')
+                porcentaje_leido = int((readed_pages * 100) / total_pages)
+                serializer.validated_data['reading_status_porcentaje'] = porcentaje_leido
+
             self.perform_create(serializer)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
@@ -36,8 +45,6 @@ class GetRecommendedBooksName(APIView):
         book_name = request.query_params.get('book_name', '')
         book_name = book_name.replace(' ', '+')
         url = f'https://openlibrary.org/search.json?q={book_name}&_spellcheck_count=0&limit=10&fields=key,cover_i,title,subtitle,author_name,name,isbn&mode=everything'
-        print(book_name)
-        print(url)
         response = requests.get(url)
 
         if response.status_code == 200:
@@ -71,8 +78,6 @@ class GetRecommendedBooksName(APIView):
                     book_info['genre'] = []
 
                 recommended_books.append(book_info)
-            print(recommended_books)
-            # Sort the books with summary first
             recommended_books = sorted(recommended_books, key=lambda x: not x['summary'])
 
             return Response(recommended_books, status=200)

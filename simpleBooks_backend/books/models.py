@@ -23,3 +23,4 @@ class Book(models.Model):
     reading_status_porcentaje = models.IntegerField(null=True,blank=True)
     finished = models.BooleanField(default=False, null=True,blank=True)
     language = models.CharField(max_length=2, choices=lista_lenguajes, default='es', null=True,blank=True)
+    readed_pages = models.IntegerField(null=True,blank=True)

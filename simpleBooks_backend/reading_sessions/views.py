@@ -16,8 +16,8 @@ class ReadingSessionViewSet(viewsets.ModelViewSet):
         instance = serializer.save()  # Guardar la instancia de ReadingSession
         book = instance.book
         total_pages = book.total_pages
-        pages_old = int(total_pages * (int(book.reading_status_porcentaje)/100))
-        total_pages_readed = pages_old + instance.readed_pages
+        total_pages_readed = book.readed_pages + instance.readed_pages
+        book.readed_pages = total_pages_readed
         percentage = (total_pages_readed / total_pages) * 100
 
         book.reading_status_porcentaje = int(percentage)
