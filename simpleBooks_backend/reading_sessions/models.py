@@ -30,18 +30,37 @@ class ReadingSession(models.Model):
         estadisticas["duracion_sesion_mas_corta"] = ReadingSession.obtener_duracion_sesion_mas_corta(usuario_id)
 
         ####
-        estadisticas["velocidad_lectura"] = Decimal(ReadingSession.obtener_hojas_leidas_por_minuto(usuario_id)).quantize(Decimal('0.00'))
-        estadisticas["page_per_day"] = ReadingSession.obtener_hojas_leidas_por_dia(usuario_id)
-        estadisticas["page_per_day_avg"] = Decimal(sum(estadisticas["page_per_day"].values())/len(estadisticas["page_per_day"])).quantize(Decimal('0.00'))
-        estadisticas["sessions_per_day"] = ReadingSession.obtener_sesiones_por_dia(usuario_id)
-        estadisticas["sessions_per_day_avg"] = Decimal(sum(estadisticas["sessions_per_day"].values())/len(estadisticas["sessions_per_day"])).quantize(Decimal('0.00'))
-        estadisticas["hours_per_day"] = ReadingSession.obtener_horas_por_dia(usuario_id)
-        # Supongamos que tienes el promedio de horas por día en la variable `hours_per_day_avg` (este valor debe ser reemplazado por el que corresponda)
-        hours_per_day_avg = Decimal(sum(estadisticas["hours_per_day"].values()) / len(estadisticas["hours_per_day"])).quantize(Decimal('0.00'))
-        # Dividimos el número decimal en partes enteras y decimales, usando divmod()
-        hours_int, minutes_decimal = divmod(hours_per_day_avg * 60, 60)
-        # Formateamos las horas y los minutos con ceros a la izquierda si es necesario
-        estadisticas["hours_per_day_avg"] = f"{hours_int:02}:{int(minutes_decimal):02}"
+        hojas_leidas_por_minuto = ReadingSession.obtener_hojas_leidas_por_minuto(usuario_id)
+        estadisticas["velocidad_lectura"] = Decimal(hojas_leidas_por_minuto).quantize(Decimal('0.00'))
+
+        hojas_leidas_por_dia = ReadingSession.obtener_hojas_leidas_por_dia(usuario_id)
+        estadisticas["page_per_day"] = hojas_leidas_por_dia
+
+        if hojas_leidas_por_dia:
+            page_per_day_avg = Decimal(sum(hojas_leidas_por_dia.values()) / len(hojas_leidas_por_dia)).quantize(Decimal('0.00'))
+        else:
+            page_per_day_avg = Decimal(0).quantize(Decimal('0.00'))
+        estadisticas["page_per_day_avg"] = page_per_day_avg
+
+        sesiones_por_dia = ReadingSession.obtener_sesiones_por_dia(usuario_id)
+        estadisticas["sessions_per_day"] = sesiones_por_dia
+
+        if sesiones_por_dia:
+            sessions_per_day_avg = Decimal(sum(sesiones_por_dia.values()) / len(sesiones_por_dia)).quantize(Decimal('0.00'))
+        else:
+            sessions_per_day_avg = Decimal(0).quantize(Decimal('0.00'))
+        estadisticas["sessions_per_day_avg"] = sessions_per_day_avg
+
+        horas_por_dia = ReadingSession.obtener_horas_por_dia(usuario_id)
+        estadisticas["hours_per_day"] = horas_por_dia
+
+        if horas_por_dia:
+            hours_per_day_avg = Decimal(sum(horas_por_dia.values()) / len(horas_por_dia)).quantize(Decimal('0.00'))
+            hours_int, minutes_decimal = divmod(hours_per_day_avg * 60, 60)
+            estadisticas["hours_per_day_avg"] = f"{hours_int:02}:{int(minutes_decimal):02}"
+        else:
+            estadisticas["hours_per_day_avg"] = "00:00"
+
         estadisticas["books_per_year"] = ReadingSession.obtener_libros_en_ano(usuario_id)
         return estadisticas
 
