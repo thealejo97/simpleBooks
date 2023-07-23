@@ -40,3 +40,7 @@ class CustomRegisterSerializer(RegisterSerializer):
         user.profile_picture = self.cleaned_data.get('profile_picture', None)
         user.save()
         return user
+
+class ChangePasswordSerializer(serializers.Serializer):
+    # old_password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True)
