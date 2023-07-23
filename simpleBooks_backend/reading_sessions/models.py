@@ -21,47 +21,48 @@ class ReadingSession(models.Model):
     def obtener_estadisticas(usuario_id):
         estadisticas = {}
 
-        estadisticas["hojas_leidas_promedio_por_sesion"] = Decimal(ReadingSession.obtener_hojas_leidas_promedio_por_sesion(usuario_id)).quantize(Decimal('0.00'))
-        estadisticas["total_sesiones_lectura"] = Decimal(ReadingSession.obtener_total_sesiones_lectura(usuario_id)).quantize(Decimal('0.00'))
-        estadisticas["tiempo_total_lectura"] = Decimal(ReadingSession.obtener_tiempo_total_lectura(usuario_id)).quantize(Decimal('0.00'))
-        estadisticas["total_hojas_leidas"] = Decimal(ReadingSession.obtener_total_hojas_leidas(usuario_id)).quantize(Decimal('0.00'))
-        estadisticas["promedio_tiempo_lectura_por_sesion"] = ReadingSession.obtener_promedio_tiempo_lectura_por_sesion(usuario_id)
-        estadisticas["duracion_sesion_mas_larga"] = ReadingSession.obtener_duracion_sesion_mas_larga(usuario_id)
-        estadisticas["duracion_sesion_mas_corta"] = ReadingSession.obtener_duracion_sesion_mas_corta(usuario_id)
+        if usuario_id:
+                estadisticas["hojas_leidas_promedio_por_sesion"] = Decimal(ReadingSession.obtener_hojas_leidas_promedio_por_sesion(usuario_id)).quantize(Decimal('0.00'))
+                estadisticas["total_sesiones_lectura"] = Decimal(ReadingSession.obtener_total_sesiones_lectura(usuario_id)).quantize(Decimal('0.00'))
+                estadisticas["tiempo_total_lectura"] = Decimal(ReadingSession.obtener_tiempo_total_lectura(usuario_id)).quantize(Decimal('0.00'))
+                estadisticas["total_hojas_leidas"] = Decimal(ReadingSession.obtener_total_hojas_leidas(usuario_id)).quantize(Decimal('0.00'))
+                estadisticas["promedio_tiempo_lectura_por_sesion"] = ReadingSession.obtener_promedio_tiempo_lectura_por_sesion(usuario_id)
+                estadisticas["duracion_sesion_mas_larga"] = ReadingSession.obtener_duracion_sesion_mas_larga(usuario_id)
+                estadisticas["duracion_sesion_mas_corta"] = ReadingSession.obtener_duracion_sesion_mas_corta(usuario_id)
 
-        ####
-        hojas_leidas_por_minuto = ReadingSession.obtener_hojas_leidas_por_minuto(usuario_id)
-        estadisticas["velocidad_lectura"] = Decimal(hojas_leidas_por_minuto).quantize(Decimal('0.00'))
+                ####
+                hojas_leidas_por_minuto = ReadingSession.obtener_hojas_leidas_por_minuto(usuario_id)
+                estadisticas["velocidad_lectura"] = Decimal(hojas_leidas_por_minuto).quantize(Decimal('0.00'))
 
-        hojas_leidas_por_dia = ReadingSession.obtener_hojas_leidas_por_dia(usuario_id)
-        estadisticas["page_per_day"] = hojas_leidas_por_dia
+                hojas_leidas_por_dia = ReadingSession.obtener_hojas_leidas_por_dia(usuario_id)
+                estadisticas["page_per_day"] = hojas_leidas_por_dia
 
-        if hojas_leidas_por_dia:
-            page_per_day_avg = Decimal(sum(hojas_leidas_por_dia.values()) / len(hojas_leidas_por_dia)).quantize(Decimal('0.00'))
-        else:
-            page_per_day_avg = Decimal(0).quantize(Decimal('0.00'))
-        estadisticas["page_per_day_avg"] = page_per_day_avg
+                if hojas_leidas_por_dia:
+                    page_per_day_avg = Decimal(sum(hojas_leidas_por_dia.values()) / len(hojas_leidas_por_dia)).quantize(Decimal('0.00'))
+                else:
+                    page_per_day_avg = Decimal(0).quantize(Decimal('0.00'))
+                estadisticas["page_per_day_avg"] = page_per_day_avg
 
-        sesiones_por_dia = ReadingSession.obtener_sesiones_por_dia(usuario_id)
-        estadisticas["sessions_per_day"] = sesiones_por_dia
+                sesiones_por_dia = ReadingSession.obtener_sesiones_por_dia(usuario_id)
+                estadisticas["sessions_per_day"] = sesiones_por_dia
 
-        if sesiones_por_dia:
-            sessions_per_day_avg = Decimal(sum(sesiones_por_dia.values()) / len(sesiones_por_dia)).quantize(Decimal('0.00'))
-        else:
-            sessions_per_day_avg = Decimal(0).quantize(Decimal('0.00'))
-        estadisticas["sessions_per_day_avg"] = sessions_per_day_avg
+                if sesiones_por_dia:
+                    sessions_per_day_avg = Decimal(sum(sesiones_por_dia.values()) / len(sesiones_por_dia)).quantize(Decimal('0.00'))
+                else:
+                    sessions_per_day_avg = Decimal(0).quantize(Decimal('0.00'))
+                estadisticas["sessions_per_day_avg"] = sessions_per_day_avg
 
-        horas_por_dia = ReadingSession.obtener_horas_por_dia(usuario_id)
-        estadisticas["hours_per_day"] = horas_por_dia
+                horas_por_dia = ReadingSession.obtener_horas_por_dia(usuario_id)
+                estadisticas["hours_per_day"] = horas_por_dia
 
-        if horas_por_dia:
-            hours_per_day_avg = Decimal(sum(horas_por_dia.values()) / len(horas_por_dia)).quantize(Decimal('0.00'))
-            hours_int, minutes_decimal = divmod(hours_per_day_avg * 60, 60)
-            estadisticas["hours_per_day_avg"] = f"{hours_int:02}:{int(minutes_decimal):02}"
-        else:
-            estadisticas["hours_per_day_avg"] = "00:00"
+                if horas_por_dia:
+                    hours_per_day_avg = Decimal(sum(horas_por_dia.values()) / len(horas_por_dia)).quantize(Decimal('0.00'))
+                    hours_int, minutes_decimal = divmod(hours_per_day_avg * 60, 60)
+                    estadisticas["hours_per_day_avg"] = f"{hours_int:02}:{int(minutes_decimal):02}"
+                else:
+                    estadisticas["hours_per_day_avg"] = "00:00"
 
-        estadisticas["books_per_year"] = ReadingSession.obtener_libros_en_ano(usuario_id)
+                estadisticas["books_per_year"] = ReadingSession.obtener_libros_en_ano(usuario_id)
         return estadisticas
 
 
