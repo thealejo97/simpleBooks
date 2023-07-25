@@ -6,9 +6,9 @@ from rest_auth.registration.views import RegisterView
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
 from simpleBooks_backend.users.serializers import ChangePasswordSerializer
 from rest_framework.authtoken.models import Token
+from django.shortcuts import render
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
@@ -69,3 +69,6 @@ class CustomChangePasswordView(APIView):
             return Response({'detail': 'La contraseña ha sido cambiada exitosamente.'}, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+def privacy_policy(request):
+    return render(request, 'privacy_policy.html')
