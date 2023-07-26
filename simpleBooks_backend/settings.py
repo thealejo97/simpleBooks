@@ -23,9 +23,6 @@ from django.core.exceptions import ImproperlyConfigured
 
 # print(BASE_DIR)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-print(BASE_DIR )
-print(BASE_DIR )
-print(BASE_DIR )
 
 secrets_file = os.path.join(BASE_DIR, "secrets.json")
 
@@ -109,7 +106,6 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'simpleBooks_backend.urls'
 
-print(os.path.join(BASE_DIR, 'simpleBooks_backend/templates/'))
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',

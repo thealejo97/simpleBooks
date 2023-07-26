@@ -74,20 +74,32 @@ class ReadingSession(models.Model):
     def obtener_nivel(estadisticas):
         velocidad_lectura = estadisticas["velocidad_lectura"]
         page_per_day_avg_last_week = estadisticas["page_per_day_avg_last_week"]
-        sessions_per_day_sum_last_week = estadisticas["sessions_per_day_sum_last_week"]
-        readed_hours_day_last_week = int(estadisticas["readed_hours_day_last_week"][:2])
-        books_per_year = estadisticas["books_per_year"]
+        # sessions_per_day_sum_last_week = estadisticas["sessions_per_day_sum_last_week"]
+        # readed_hours_day_last_week = int(estadisticas["readed_hours_day_last_week"][:2])
+        # books_per_year = estadisticas["books_per_year"]
 
         # Determinar el nivel del lector
-        nivel = None
-        if velocidad_lectura <= 200 and page_per_day_avg_last_week <= 50 and sessions_per_day_sum_last_week <= 2 and readed_hours_day_last_week <= 2 and books_per_year <= 10:
-            nivel = "Novato"
-        elif 200 < velocidad_lectura <= 300 and 50 < page_per_day_avg_last_week <= 150 and 2 < sessions_per_day_sum_last_week <= 5 and 2 < readed_hours_day_last_week <= 6 and 10 < books_per_year <= 25:
-            nivel = "Intermedio"
-        else:
-            nivel = "Avanzado"
+        puntos = 0
+        #Los puntos seran 3 alto, 2 medio, 1 bajo
+        if velocidad_lectura <= 200:
+            puntos += 1
+        elif 200 < velocidad_lectura <= 300:
+            puntos += 2
+        elif velocidad_lectura > 300:
+            puntos += 3
+        if page_per_day_avg_last_week <= 10:
+            puntos += 1
+        if 10 < page_per_day_avg_last_week >= 20:
+            puntos += 2
+        if page_per_day_avg_last_week > 20:
+            puntos += 3
 
-        return nivel
+        if puntos <= 2:
+            return "Novato"
+        if puntos <= 4:
+            return "Medio"
+        if puntos > 4:
+            return "Avanzado"
 
     @staticmethod
     def obtener_libros_en_ano(usuario_id):
