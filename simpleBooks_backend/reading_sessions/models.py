@@ -35,7 +35,7 @@ class ReadingSession(models.Model):
 
         if usuario_id:
                 ####velocidad_lectura
-                hojas_leidas_por_minuto = ReadingSession.obtener_hojas_leidas_por_minuto(usuario_id)
+                hojas_leidas_por_minuto = ReadingSession.obtener_palabras_por_minuto(usuario_id)
                 estadisticas["velocidad_lectura"] = Decimal(hojas_leidas_por_minuto).quantize(Decimal('0.00'))
                 ####HOJAS POR DIA
                 hojas_leidas_por_dia = ReadingSession.obtener_hojas_leidas_por_dia(usuario_id)
@@ -68,9 +68,27 @@ class ReadingSession(models.Model):
                     estadisticas["readed_hours_day_last_week"] = "00:00"
 
                 estadisticas["books_per_year"] = ReadingSession.obtener_libros_en_ano(usuario_id)
+                estadisticas["nivel"] = ReadingSession.obtener_nivel(estadisticas)
         return estadisticas
 
-##  METODOS ESTADISTICOS
+    def obtener_nivel(estadisticas):
+        velocidad_lectura = estadisticas["velocidad_lectura"]
+        page_per_day_avg_last_week = estadisticas["page_per_day_avg_last_week"]
+        sessions_per_day_sum_last_week = estadisticas["sessions_per_day_sum_last_week"]
+        readed_hours_day_last_week = int(estadisticas["readed_hours_day_last_week"][:2])
+        books_per_year = estadisticas["books_per_year"]
+
+        # Determinar el nivel del lector
+        nivel = None
+        if velocidad_lectura <= 200 and page_per_day_avg_last_week <= 50 and sessions_per_day_sum_last_week <= 2 and readed_hours_day_last_week <= 2 and books_per_year <= 10:
+            nivel = "Novato"
+        elif 200 < velocidad_lectura <= 300 and 50 < page_per_day_avg_last_week <= 150 and 2 < sessions_per_day_sum_last_week <= 5 and 2 < readed_hours_day_last_week <= 6 and 10 < books_per_year <= 25:
+            nivel = "Intermedio"
+        else:
+            nivel = "Avanzado"
+
+        return nivel
+
     @staticmethod
     def obtener_libros_en_ano(usuario_id):
         current_year = datetime.now().year
@@ -108,25 +126,26 @@ class ReadingSession(models.Model):
 
         return horas_por_dia
     @staticmethod
-    def obtener_hojas_leidas_por_minuto(usuario_id):
+    def obtener_palabras_por_minuto(usuario_id):
         usuario = User.objects.get(id=usuario_id)
         sesiones_lectura = ReadingSession.objects.filter(user=usuario).aggregate(
             tiempo_total=Sum(ExpressionWrapper(F("time_of_reading"), output_field=DurationField())),
             hojas_leidas=Sum("readed_pages"),
         )
+
         if not sesiones_lectura:
             return 0
+
         tiempo_total = sesiones_lectura["tiempo_total"]
         hojas_leidas = sesiones_lectura["hojas_leidas"]
+        palabras_por_hoja = 250  # Número promedio de palabras por hoja
 
         if tiempo_total and hojas_leidas:
-            hojas_por_minuto = hojas_leidas / (tiempo_total.total_seconds() / 60)
-            hojas_por_minuto = round(hojas_por_minuto, 2)  # Redondear a 2 decimales
+            palabras_por_minuto = (palabras_por_hoja * hojas_leidas) / (tiempo_total.total_seconds() / 60)
         else:
-            hojas_por_minuto = 0
+            palabras_por_minuto = 0
 
-        return hojas_por_minuto
-
+        return palabras_por_minuto
     @staticmethod
     def obtener_sesiones_por_dia(usuario_id):
         usuario = User.objects.get(id=usuario_id)
