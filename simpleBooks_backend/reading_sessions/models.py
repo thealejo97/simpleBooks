@@ -6,8 +6,9 @@ from simpleBooks_backend.books.models import Book
 from ..users.models import User
 from django.db.models import Sum, ExpressionWrapper, F, DurationField, Avg, Max, Min
 from decimal import Decimal, ROUND_HALF_UP
-from datetime import datetime
-
+from datetime import datetime, timedelta
+from collections import defaultdict
+from django.utils import timezone
 
 class ReadingSession(models.Model):
     time_of_reading = models.TimeField()
@@ -142,27 +143,29 @@ class ReadingSession(models.Model):
         usuario = User.objects.get(id=usuario_id)
         sesiones_lectura = ReadingSession.objects.filter(user=usuario)
 
-        if not sesiones_lectura:
-            return {}
+        # Obtiene la fecha de hoy
+        today = timezone.now().date()
 
-        # Usamos una lista de tuplas para realizar el seguimiento de las páginas leídas por día
+        # Calcula la fecha de hace 8 dias
+        eight_days_ago = today - timedelta(days=8)
+
+        # Crea una lista con las fechas desde hace 8 dias
+        date_list = [eight_days_ago + timedelta(days=x) for x in range(8)]
+
+        # Use a defaultdict to track the pages read per day
         paginas_por_dia = defaultdict(int)
 
-        for sesion in sesiones_lectura:
-            # Convertimos la fecha a un string en formato yyyy-mm-dd para agrupar las sesiones por día
-            fecha_sesion = str(sesion.creation_date.date())
+        # Populate pages read for each date
+        for date in date_list:
+            fecha_sesion = str(date)
+            paginas_por_dia[fecha_sesion] = 0
 
-            # Sumamos las páginas leídas al día correspondiente
+        for sesion in sesiones_lectura:
+            fecha_sesion = str(sesion.creation_date.date())
             paginas_por_dia[fecha_sesion] += sesion.readed_pages
 
-        # Convertimos el defaultdict a una lista de tuplas (fecha, paginas)
-        lista_paginas_por_dia = list(paginas_por_dia.items())
-
-        # Ordenamos la lista de tuplas por las fechas en orden descendente (de la más reciente a la más antigua)
-        lista_paginas_por_dia.sort(reverse=True)
-
-        # Construimos el JSON de respuesta utilizando la lista ordenada
-        json_respuesta = {fecha: paginas for fecha, paginas in lista_paginas_por_dia}
+        # Create the JSON response using the populated pages per day
+        json_respuesta = {fecha: paginas for fecha, paginas in paginas_por_dia.items()}
 
         return json_respuesta
     @staticmethod
