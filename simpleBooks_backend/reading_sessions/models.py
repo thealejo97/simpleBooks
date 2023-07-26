@@ -97,7 +97,7 @@ class ReadingSession(models.Model):
         if puntos <= 2:
             return "Novato"
         if puntos <= 4:
-            return "Medio"
+            return "Intermedio"
         if puntos > 4:
             return "Avanzado"
 
