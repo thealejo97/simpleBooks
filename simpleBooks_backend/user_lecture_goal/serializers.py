@@ -12,12 +12,11 @@ class UserLectureGoalSerializer(serializers.ModelSerializer):
         fields = (
             'id',
             'user',
-            'goal_page_per_day',
-            'goal_reading_speed',
-            'goal_sessions_per_day',
-            'goal_hours_per_day',
+            'goal_velocidad_lectura',
+            'goal_page_per_day_last_week',
+            'goal_sessions_per_day_sum_last_week',
+            'goal_readed_hours_day_last_week',
             'goal_book_per_year',
-            'creation_date',
             'estadisticas',
         )
 
