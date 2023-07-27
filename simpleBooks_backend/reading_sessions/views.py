@@ -12,6 +12,17 @@ class ReadingSessionViewSet(viewsets.ModelViewSet):
     queryset = ReadingSession.objects.all()
     serializer_class = ReadingSessionSerializer
 
+    def perform_destroy(self, instance):
+        book = instance.book
+        total_pages = book.total_pages
+        total_pages_readed = book.readed_pages - instance.readed_pages  # Restar las páginas leídas de la sesión eliminada
+        book.readed_pages = total_pages_readed if total_pages_readed >= 0 else 0  # Asegurarse de que las páginas leídas no sean negativas
+        percentage = (book.readed_pages / total_pages) * 100
+        book.reading_status_porcentaje = int(percentage)
+        book.save()
+
+        instance.delete()
+
     def perform_create(self, serializer):
         instance = serializer.save()  # Guardar la instancia de ReadingSession
         book = instance.book
