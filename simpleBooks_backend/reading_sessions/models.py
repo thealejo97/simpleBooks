@@ -24,12 +24,13 @@ class ReadingSession(models.Model):
         Campos:
             velocidad_lectura OK
             page_per_day_last_week OK
-            page_per_day_avg_last_week OK
+            page_per_day_avg_last_week OK total de paginas leidas la semana pasada
             sessions_per_day_last_week OK
             sessions_per_day_sum_last_week OK
             hours_last_week OK
             readed_hours_day_last_week OK
             books_per_year OK
+            nivel OK
         """
         estadisticas = {}
 
@@ -42,7 +43,7 @@ class ReadingSession(models.Model):
                 estadisticas["page_per_day_last_week"] = hojas_leidas_por_dia
                 ####HOJAS POR DIA PROM
                 if hojas_leidas_por_dia:
-                    page_per_day_avg_last_week = Decimal(sum(hojas_leidas_por_dia.values()) / len(hojas_leidas_por_dia)).quantize(Decimal('0.00'))
+                    page_per_day_avg_last_week = Decimal(sum(hojas_leidas_por_dia.values())).quantize(Decimal('0.00'))
                 else:
                     page_per_day_avg_last_week = Decimal(0).quantize(Decimal('0.00'))
                 estadisticas["page_per_day_avg_last_week"] = page_per_day_avg_last_week
@@ -87,11 +88,11 @@ class ReadingSession(models.Model):
             puntos += 2
         elif velocidad_lectura > 300:
             puntos += 3
-        if page_per_day_avg_last_week <= 10:
+        if page_per_day_avg_last_week <= 50:
             puntos += 1
-        if 10 < page_per_day_avg_last_week >= 20:
+        if 50 < page_per_day_avg_last_week >= 1500:
             puntos += 2
-        if page_per_day_avg_last_week > 20:
+        if page_per_day_avg_last_week > 150:
             puntos += 3
 
         if puntos <= 2:
@@ -122,16 +123,17 @@ class ReadingSession(models.Model):
         date_list = [eight_days_ago + timedelta(days=x) for x in range(7)]
 
         # Use a defaultdict to track the number of hours per day
-        horas_por_dia = defaultdict(int)
+        horas_por_dia = defaultdict(Decimal)
 
         # Populate hours count for each date
         for date in date_list:
             fecha_sesion = str(date)
-            horas_por_dia[fecha_sesion] = 0
+            horas_por_dia[fecha_sesion] = Decimal('0.0')
 
         for sesion in sesiones_lectura:
             fecha_sesion = str(sesion.creation_date.date())
-            horas_por_dia[fecha_sesion] += sesion.time_of_reading.hour
+            horas_por_dia[fecha_sesion] += Decimal(str(sesion.time_of_reading.hour)) + Decimal(
+                str(sesion.time_of_reading.minute / 60))
 
         # Convert the defaultdict to a normal dictionary
         horas_por_dia = dict(horas_por_dia)

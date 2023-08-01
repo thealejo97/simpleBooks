@@ -4,11 +4,21 @@ from .serializers import UserSerializer, CustomRegisterSerializer
 from rest_auth.views import LoginView
 from rest_auth.registration.views import RegisterView
 from rest_framework import status
-from rest_framework.response import Response
 from rest_framework.views import APIView
 from simpleBooks_backend.users.serializers import ChangePasswordSerializer
 from rest_framework.authtoken.models import Token
 from django.shortcuts import render
+from django.core.mail import send_mail
+from django.shortcuts import get_object_or_404
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+import smtplib
+from email.mime.text import MIMEText
+
+
+from ..settings import DOMINIO
+
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
@@ -72,3 +82,38 @@ class CustomChangePasswordView(APIView):
 
 def privacy_policy(request):
     return render(request, 'privacy_policy.html')
+
+@api_view(['POST'])
+@csrf_exempt
+def reset_password(request):
+    if request.method == 'POST':
+        email = request.data.get('email')
+        user = get_object_or_404(User, username=email)
+        print(user)
+
+        # Generar el token utilizando el método que definimos en el modelo User
+        reset_token = user.generate_reset_token()
+
+        reset_url_resto = f'reset_password/?token={reset_token}'
+        reset_url = DOMINIO + reset_url_resto
+        print(reset_url)
+
+
+        # Crear el mensaje codificado en formato UTF-8
+        subject = 'Reseteo de Contraseña'
+        message = f'Hola {user.username}, para resetear tu contraseña, haz clic en el siguiente enlace: {reset_url}'
+        msg = MIMEText(message.encode('utf-8'), 'plain', 'utf-8')
+        msg['Subject'] = subject
+        msg['From'] = 'fakethealejo97@gmail.com'
+        msg['To'] = email
+
+        # Enviar el mensaje utilizando smtplib
+        with smtplib.SMTP('smtp.gmail.com', 587) as server:
+            server.starttls()
+            print("logueando")
+            server.login('thealejo97@gmail.com', 'Alejandroreyok1')
+            print("Enviando ...")
+            server.send_message(msg)
+            print("Enviado")
+
+        return Response({'message': 'Se ha enviado un correo con las instrucciones para resetear tu contraseña.'})

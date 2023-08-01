@@ -21,7 +21,7 @@ from rest_framework import routers
 from django.contrib import admin
 
 from simpleBooks_backend.reading_sessions.views import ReadingSessionViewSet, ReadingSessionStatistics
-from simpleBooks_backend.users.views import UserViewSet, CustomLoginView, CustomRegisterView, CustomChangePasswordView, privacy_policy
+from simpleBooks_backend.users.views import UserViewSet, CustomLoginView, CustomRegisterView, CustomChangePasswordView, privacy_policy, reset_password
 from simpleBooks_backend.books.views import BookViewSet, GetRecommendedBooksName
 from simpleBooks_backend.authors.views import AuthorViewSet
 from simpleBooks_backend.user_lecture_goal.views import UserLectureGoalViewSet
@@ -44,4 +44,5 @@ urlpatterns = [
     path('api/auth/registration/', CustomRegisterView.as_view(), name='rest_register'),
     path('api/auth/change_password/', CustomChangePasswordView.as_view(), name='change-password'),
     path('privacy_policy/', privacy_policy, name='privacy-policy'),
+    path('api/user/reset_password/', reset_password, name='reset_password'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

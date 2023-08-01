@@ -45,7 +45,7 @@ SECRET_KEY = 'django-insecure-@rd(izblo&e+lh=!olyk2=m09uoym!x_7e52%wj+)9p^hy-#)n
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.1.6','localhost','simplebooks.zeabur.app','35.184.64.234','dbc0-190-1-195-254.ngrok-free.app']
+ALLOWED_HOSTS = ['192.168.1.5','localhost','simplebooks.zeabur.app','35.184.64.234','dbc0-190-1-195-254.ngrok-free.app']
 
 
 # Application definition
@@ -184,3 +184,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+DOMINIO = 'http://localhost:8000/'
+# DOMINIO = 'http://35.184.64.234:8000/'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'tu_correo@gmail.com'
+EMAIL_HOST_PASSWORD = 'tu_contraseña'

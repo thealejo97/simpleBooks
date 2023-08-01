@@ -14,8 +14,7 @@ class UserLectureGoalViewSet(viewsets.ModelViewSet):
     def by_user(self, request):
         user_id = request.query_params.get('user_id', None)
         if user_id:
-            goal = self.get_queryset().filter(user__id=user_id).order_by('-creation_date').first()
-            print("Retornando")
+            goal = self.get_queryset().filter(user__id=user_id).last()
             if goal:
                 serializer = self.get_serializer(goal)
                 return Response(serializer.data)
@@ -23,3 +22,12 @@ class UserLectureGoalViewSet(viewsets.ModelViewSet):
                 return Response({})
         else:
             return Response({})
+
+    def perform_create(self, serializer):
+        user_id = self.request.data.get('user')
+        if user_id:
+            # Eliminar registros anteriores del mismo usuario antes de crear uno nuevo
+            UserLectureGoal.objects.filter(user__id=user_id).delete()
+            serializer.save()
+        else:
+            return Response({'error': 'No se proporcionó un usuario válido.'}, status=status.HTTP_400_BAD_REQUEST)
